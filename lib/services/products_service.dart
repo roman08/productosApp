@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:productosapp/models/models.dart';
@@ -9,6 +10,9 @@ class ProductsService extends ChangeNotifier {
 
   final String _baseUrl = 'flutter-productos-df4cf-default-rtdb.firebaseio.com';
   final List<Product> prodcuts = [];
+
+  final storage = new FlutterSecureStorage();
+
   Product selectedProduct;
   bool isLoading = true;
   bool isSaving = false;
@@ -31,6 +35,7 @@ class ProductsService extends ChangeNotifier {
     final Map<String, dynamic> productMap = json.decode(resp.body);
 
     productMap.forEach((key, value) {
+      print(value);
       final tempProduct = Product.fromMap(value);
       tempProduct.id = key;
       this.prodcuts.add(tempProduct);
@@ -62,7 +67,7 @@ class ProductsService extends ChangeNotifier {
   Future<String> updateProduct( Product product) async {
     final url = Uri.https(_baseUrl,'products/${ product.id }.json');
     final resp = await http.put(url, body: product.toJson());
-    final decodeData = resp.body;
+    // final decodeData = resp.body;
 
     final index = this.prodcuts.indexWhere((element) => element.id == product.id);
     this.prodcuts[index] = product;
@@ -115,9 +120,6 @@ class ProductsService extends ChangeNotifier {
     this.newPictureFile = null;
     final decodeData = json.decode(resp.body);
     return decodeData['secure_url'];
-
-    // this.isSaving = false;
-    // notifyListeners();
 
   }
 

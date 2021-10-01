@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:productosapp/providers/login_form_provider.dart';
-import 'package:productosapp/services/services.dart';
+import 'package:productosapp/services/auth_service.dart';
 import 'package:productosapp/ui/input_decorations.dart';
 import 'package:provider/provider.dart';
 import 'package:productosapp/widgets/widgets.dart';
 
 
-class LoginScreen extends StatelessWidget {
+class RegisterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     SizedBox( height: 10),
-                    Text('Ingreso', style: Theme.of(context).textTheme.headline4),
+                    Text('Crear cuenta', style: Theme.of(context).textTheme.headline4),
                     SizedBox( height: 30),
                     ChangeNotifierProvider(
                       create: ( _ ) => LoginFormProvider(),
@@ -31,8 +31,8 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox( height: 50),
               TextButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, 'register'), 
-                child: Text('Crear una nueva cuenta', style: TextStyle(fontSize: 18, color:  Colors.black87)),
+                onPressed: () => Navigator.pushReplacementNamed(context, 'login'), 
+                child: Text('Ingresar con tu cuenta', style: TextStyle(fontSize: 18, color:  Colors.black87)),
                 style: ButtonStyle(
                   overlayColor: MaterialStateProperty.all(Colors.indigo.withOpacity(0.2)),
                   shape: MaterialStateProperty.all(StadiumBorder())
@@ -107,23 +107,22 @@ class _LoginForm extends StatelessWidget {
                   style: TextStyle(color: Colors.white)),
               ),
               onPressed: loginForm.isLoading ? null : () async{
-                // final snackbar = SnackBar(content: Text('Notificación de prueba'));
-
                 FocusScope.of(context).unfocus();
                 final authService = Provider.of<AuthService>(context, listen: false);
                 if (!loginForm.isValidForm()) return;
                 loginForm.isLoading = true;
-                final String errorMessage = await authService.login(loginForm.email, loginForm.password);
+                final String errorMessage = await authService.createUser(loginForm.email, loginForm.password);
 
                 if(errorMessage == null) {
                   Navigator.pushReplacementNamed(context, 'home');
                 }else {
-                  // ScaffoldMessenger.of(context).showSnackBar(snackbar);
                   print(errorMessage);
                   // todo: mostrar error
                   loginForm.isLoading = false;
                 }
                 // await Future.delayed(Duration(seconds: 2));
+
+                
               }
             )
           ],
